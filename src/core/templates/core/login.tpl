@@ -1,6 +1,5 @@
 {% extends 'core/base.tpl' %}
 {% block content %}
-
     {% if form.errors %}
         <p>Your username and password didn't match. Please try again.</p>
     {% endif %}

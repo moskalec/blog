@@ -10,18 +10,25 @@
         {% block navbar %}
             {% include 'core/navbar.tpl' %}
         {% endblock %}
-        <br>
         <div class="content container">
+
+            <ol class="breadcrumb my-4">
+              {% block breadcrumb %}
+              {% endblock %}
+            </ol>
+
             <div class="row">
                 <div class="col-sm-8 blog-main">
                     {% block content %}
                     {% endblock %}
                 </div>
-                <div class="col-sm-3 offset-sm-1 blog-sidebar">
-                    {% include "vlog/most_popular_categories.tpl" %}
-                    {% include "vlog/most_populated_tags.tpl" %}
-                    {% include "vlog/most_commented_articles.tpl" %}
-                </div>
+                {% if user.is_authenticated %}
+                    <div class="col-sm-3 offset-sm-1 blog-sidebar">
+                        {% include "vlog/most_popular_categories.tpl" %}
+                        {% include "vlog/most_populated_tags.tpl" %}
+                        {% include "vlog/most_commented_articles.tpl" %}
+                    </div>
+                {% endif %}
             </div>
         </div>
     </body>
