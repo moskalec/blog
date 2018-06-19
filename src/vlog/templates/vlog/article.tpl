@@ -4,8 +4,8 @@
 
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{{ url('vlog:index') }}">{{ _('Home') }}</a></li>
-  <li class="breadcrumb-item"><a href="{{ category.slug }}">{{ category.title }}</a></li>
-  <li class="breadcrumb-item active"><a href="{{ article.slug }}">{{ article.title }}</a></li>
+  <li class="breadcrumb-item"><a href="{{ url('vlog:index') }}{{ category.slug }}">{{ category.title }}</a></li>
+  <li class="breadcrumb-item active">{{ article.title }}</li>
 {% endblock %}
 
 {% block content %}

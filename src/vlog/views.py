@@ -26,6 +26,21 @@ class IndexView(BaseView):
         return context
 
 
+class ArticlesView(IndexView):
+    template_name = 'vlog/articles.tpl'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        articles = Article.objects.all()
+
+        context.update({
+            'articles': articles
+        })
+
+        return context
+
+
 class ArticleView(IndexView):
     template_name = 'vlog/article.tpl'
 
@@ -64,14 +79,14 @@ class CategoryView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # category = Category.objects.filter(slug=kwargs.get('slug'))
+        category = Category.objects.filter(slug=kwargs.get('slug'))
         # articles = Article.objects.annotate(category_slug=kwargs.get('slug')) #. order_by('-comment_count')
-        category = Category.objects.get(slug=kwargs.get('slug'))
-        articles = Article.objects.filter(category_id=category.id)
+        #category = Category.objects.get(slug=kwargs.get('slug'))
+        #articles = Article.objects.filter(category=category)
 
         context.update({
             'category': category,
-            'articles': articles
+            #'articles': articles
         })
 
         return context
@@ -87,6 +102,23 @@ class TagsView(IndexView):
 
         context.update({
             'tags': tags
+        })
+
+        return context
+
+
+class TagView(IndexView):
+    template_name = 'vlog/tag.tpl'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        tag = Tag.objects.get(slug=kwargs.get('slug'))
+        articles = Article.objects.filter(tags=tag)
+
+        context.update({
+            'tag': tag,
+            'articles': articles
         })
 
         return context

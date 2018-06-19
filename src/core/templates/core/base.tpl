@@ -11,12 +11,12 @@
             {% include 'core/navbar.tpl' %}
         {% endblock %}
         <div class="content container">
-
-            <ol class="breadcrumb my-4">
-              {% block breadcrumb %}
-              {% endblock %}
-            </ol>
-
+            {% if user.is_authenticated %}
+                <ol class="breadcrumb my-4">
+                  {% block breadcrumb %}
+                  {% endblock %}
+                </ol>
+            {% endif %}
             <div class="row">
                 <div class="col-sm-8 blog-main">
                     {% block content %}
@@ -31,6 +31,11 @@
                 {% endif %}
             </div>
         </div>
+        {% if user.is_authenticated %}
+            {% block footer %}
+                {% include 'core/footer.tpl' %}
+            {% endblock %}
+        {% endif %}
     </body>
     <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
 </html>

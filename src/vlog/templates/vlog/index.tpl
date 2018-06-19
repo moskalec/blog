@@ -7,7 +7,7 @@
 {% block content %}
     {% for article in articles %}
         <div class="blog-post">
-            <h4><a href="{{ article.slug }}">{{ article.title }}</a></h4>
+            <h4><a href="{{ categories.slug }}/{{ article.slug }}">{{ article.title }}</a></h4>
             <p>{{ article.description|linebreaksbr }}</p>
             <div class="date">
                 {{ article.created }}
