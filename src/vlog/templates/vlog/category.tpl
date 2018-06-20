@@ -5,13 +5,13 @@
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{{ url('vlog:index') }}">{{ _('Home') }}</a></li>
   <li class="breadcrumb-item"><a href="{{ url('vlog:categories') }}">{{ _('Categories') }}</a></li>
-  <li class="breadcrumb-item">{{ category.title }}</li>
+  <li class="breadcrumb-item"><a href="{{ url('vlog:categories') }}{{ category.slug }}">{{ category.title }}</li>
 {% endblock %}
 
 {% block content %}
     {% for article in articles %}
         <div class="blog-post">
-            <h4><a href="/">{{ article.title }}</a></h4>
+            <h4><a href="{{ url('vlog:categories') }}{{ article.category.slug }}/articles/{{ article.slug }}">{{ article.title }}</a></h4>
             <div class="date">
                 {{ article.created }}
             </div>
