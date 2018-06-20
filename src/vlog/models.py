@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.translation import gettext as _
 
 from ckeditor.fields import RichTextField
+from django.urls import reverse
 
 from core.models import BaseModel
 
@@ -36,6 +37,8 @@ class Category(Publication):
         on_delete=models.SET_NULL,
         null=True
     )
+    def get_absolute_url(self):
+        return reverse('detail', args=[str(self.slug)])
 
     class Meta:
         db_table = 'category'

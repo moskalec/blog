@@ -2,7 +2,6 @@ from core.views import BaseView
 from .models import Article, Category, Tag
 from django.db.models import Count
 
-
 class IndexView(BaseView):
     template_name = 'vlog/index.tpl'
 
@@ -12,8 +11,8 @@ class IndexView(BaseView):
         articles = Article.objects.all()
         categories = Category.objects.get(title=articles[0].category)
         most_popular_categories = Category.objects.annotate(articles_count=Count('articles')).order_by('-articles_count')[:3]
-        most_commented_articles = Article.objects.annotate(comment_count=Count('comments')).order_by('-comment_count')[:10]
-        most_populated_tags = Tag.objects.annotate(num_articles=Count('articles')).order_by('-num_articles')[:10]
+        most_commented_articles = Article.objects.annotate(comment_count=Count('comments')).order_by('-comment_count')[:3]
+        most_populated_tags = Tag.objects.annotate(num_articles=Count('articles')).order_by('-num_articles')[:3]
 
         context.update({
             'articles': articles,
@@ -28,17 +27,6 @@ class IndexView(BaseView):
 
 class ArticlesView(IndexView):
     template_name = 'vlog/articles.tpl'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        articles = Article.objects.all()
-
-        context.update({
-            'articles': articles
-        })
-
-        return context
 
 
 class ArticleView(IndexView):
@@ -79,14 +67,12 @@ class CategoryView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        category = Category.objects.filter(slug=kwargs.get('slug'))
-        # articles = Article.objects.annotate(category_slug=kwargs.get('slug')) #. order_by('-comment_count')
-        #category = Category.objects.get(slug=kwargs.get('slug'))
-        #articles = Article.objects.filter(category=category)
+        category = Category.objects.get(slug=kwargs.get('slug'))
+        articles = Article.objects.filter(category=category)
 
         context.update({
             'category': category,
-            #'articles': articles
+            'articles': articles
         })
 
         return context
@@ -119,6 +105,51 @@ class TagView(IndexView):
         context.update({
             'tag': tag,
             'articles': articles
+        })
+
+        return context
+
+
+class PopulatedTagsView(IndexView):
+    template_name = 'vlog/populated_tags.tpl'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        popular_tags = Tag.objects.annotate(num_articles=Count('articles')).order_by('-num_articles')
+
+        context.update({
+            'popular_tags': popular_tags
+        })
+
+        return context
+
+
+class PopularCategoriesView(IndexView):
+    template_name = 'vlog/popular_categories.tpl'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        popular_categories = Category.objects.annotate(articles_count=Count('articles')).order_by('-articles_count')
+
+        context.update({
+            'popular_categories': popular_categories
+        })
+
+        return context
+
+
+class PopularArticlesView(IndexView):
+    template_name = 'vlog/popular_articles.tpl'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        popular_articles = Article.objects.annotate(comment_count=Count('comments')).order_by('-comment_count')
+
+        context.update({
+            'popular_articles': popular_articles
         })
 
         return context

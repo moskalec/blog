@@ -1,6 +1,6 @@
-<h4>{{ _('Комментируемые статьи') }}</h4>
-{% for most_commented_article in most_commented_articles %}
+<h4><a href="{{ url('vlog:popular_articles') }}">{{ _('Комментируемые статьи') }}</a></h4>
+{% for article in most_commented_articles %}
     <div class="sidebar-module sidebar-module-inset">
-        <h5>{{ most_commented_article.title }}</h5>
+        <h5><a href="/">{{ article.title }}</a></h5>
     </div>
 {% endfor %}
