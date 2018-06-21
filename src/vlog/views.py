@@ -9,10 +9,20 @@ class IndexView(BaseView):
         context = super().get_context_data(**kwargs)
 
         articles = Article.objects.all()
+
         categories = Category.objects.get(title=articles[0].category)
-        most_popular_categories = Category.objects.annotate(articles_count=Count('articles')).order_by('-articles_count')[:3]
-        most_commented_articles = Article.objects.annotate(comment_count=Count('comments')).order_by('-comment_count')[:3]
-        most_populated_tags = Tag.objects.annotate(num_articles=Count('articles')).order_by('-num_articles')[:3]
+
+        most_popular_categories = Category.objects\
+                            .annotate(articles_count=Count('articles'))\
+                            .order_by('-articles_count')[:3]
+
+        most_commented_articles = Article.objects\
+                            .annotate(comment_count=Count('comments'))\
+                            .order_by('-comment_count')[:3]
+
+        most_populated_tags = Tag.objects\
+                            .annotate(num_articles=Count('articles'))\
+                            .order_by('-num_articles')[:3]
 
         context.update({
             'articles': articles,
@@ -116,7 +126,8 @@ class PopulatedTagsView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        popular_tags = Tag.objects.annotate(num_articles=Count('articles')).order_by('-num_articles')
+        popular_tags = Tag.objects.annotate(num_articles=Count('articles'))\
+                                            .order_by('-num_articles')
 
         context.update({
             'popular_tags': popular_tags
@@ -131,7 +142,9 @@ class PopularCategoriesView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        popular_categories = Category.objects.annotate(articles_count=Count('articles')).order_by('-articles_count')
+        popular_categories = Category.objects\
+                                .annotate(articles_count=Count('articles'))\
+                                .order_by('-articles_count')
 
         context.update({
             'popular_categories': popular_categories
@@ -146,7 +159,9 @@ class PopularArticlesView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        popular_articles = Article.objects.annotate(comment_count=Count('comments')).order_by('-comment_count')
+        popular_articles = Article.objects\
+                            .annotate(comment_count=Count('comments'))\
+                            .order_by('-comment_count')
 
         context.update({
             'popular_articles': popular_articles

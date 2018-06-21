@@ -11,7 +11,7 @@
 {% block content %}
     {% for article in articles %}
         <div class="blog-post">
-            <h4><a href="{{ url('vlog:categories') }}{{ article.category.slug }}/articles/{{ article.slug }}">{{ article.title }}</a></h4>
+            <h4><a href="articles/{{ article.slug }}">{{ article.title }}</a></h4>
             <div class="date">
                 {{ article.created }}
             </div>
