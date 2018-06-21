@@ -2,6 +2,10 @@ from core.views import BaseView
 from .models import Article, Category, Tag
 from django.db.models import Count
 
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.shortcuts import render
+
+
 class IndexView(BaseView):
     template_name = 'vlog/index.tpl'
 
@@ -45,7 +49,7 @@ class ArticleView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        article = Article.objects.get(slug=kwargs.get('slug'))
+        article = Article.objects.get(slug=kwargs.get('article_title'))
         category = Category.objects.get(title=article.category)
 
         context.update({
@@ -59,16 +63,21 @@ class ArticleView(IndexView):
 class CategoriesView(IndexView):
     template_name = 'vlog/categories.tpl'
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        categories = Category.objects.all()
+        categories_list = Category.objects.all()
+        paginator = Paginator(categories_list, 2)
+
+        page = request.GET.get('page')
+        categories = paginator.get_page(page)
 
         context.update({
             'categories': categories
         })
-
-        return context
+        # import ipdb
+        # ipdb.set_trace()
+        return self.render_to_response(context)
 
 
 class CategoryView(IndexView):

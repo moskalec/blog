@@ -1,6 +1,6 @@
 {% extends "core/base.tpl" %}
 
-{% block title %}{{ article.title }}{% endblock %}
+{% block title %}{% endblock %}
 
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{{ url('vlog:index') }}">{{ _('Home') }}</a></li>
@@ -12,6 +12,6 @@
 {% block content %}
     <h1 class="blog-post-title">{{ article.title }}</h1>
     <div class="blog-post">
-        <p>{{ article.content }}</p>
+        <p>{{ article.content|safe }}</p>
     </div>
 {% endblock %}

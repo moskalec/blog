@@ -21,7 +21,7 @@ urlpatterns = [
 
     re_path(
         '^home/categories/(?P<category_title>[\w-]+)/articles/(?P<article_title>[\w-]+)/',
-        views.ArticlesView.as_view(template_name='vlog/article.tpl'), name='article'
+        views.ArticleView.as_view(template_name='vlog/article.tpl'), name='article'
     ),
 
     re_path(

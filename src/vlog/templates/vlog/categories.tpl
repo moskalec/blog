@@ -14,4 +14,23 @@
             </div>
         </div>
     {% endfor %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if categories.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ categories.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ categories.number }} of {{ categories.paginator.per_pages }}.
+            </span>
+
+            {% if categories.has_next %}
+                <a href="?page={{ categories.paginator_per_page }}">next</a>
+                <a href="?page={{ categories.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
 {% endblock %}
