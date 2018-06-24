@@ -20,7 +20,7 @@ urlpatterns = [
     ),
 
     re_path(
-        '^home/categories/(?P<category_title>[\w-]+)/articles/(?P<article_title>[\w-]+)/',
+        '^home/categories/(?P<article_category_slug>[\w-]+)/articles/(?P<article_title>[\w-]+)/',
         views.ArticleView.as_view(template_name='vlog/article.tpl'), name='article'
     ),
 
@@ -30,7 +30,12 @@ urlpatterns = [
     ),
 
     re_path(
-        '^home/categories/(?P<slug>[\w-]+)/', views.CategoryView.as_view\
+        '^home/articles/popular/$', views.PopularArticlesView.as_view\
+        (template_name='vlog/popular_articles.tpl'), name='popular_articles'
+    ),
+
+    re_path(
+        '^home/categories/(?P<article_category_slug>[\w-]+)/', views.CategoryView.as_view\
         (template_name='vlog/category.tpl'), name='category'
     ),
 
@@ -47,10 +52,5 @@ urlpatterns = [
     re_path(
         '^home/tags/(?P<slug>[\w-]+)/', views.TagView.as_view\
         (template_name='vlog/tag.tpl'), name='tag'
-    ),
-
-    re_path(
-        '^home/articles/popular/$', views.PopularArticlesView.as_view\
-        (template_name='vlog/popular_articles.tpl'), name='popular_articles'
     ),
 ]

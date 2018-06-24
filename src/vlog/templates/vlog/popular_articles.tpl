@@ -9,7 +9,7 @@
 {% block content %}
     {% for article in popular_articles %}
         <div class="blog-post">
-            <h4><a href="/">{{ article.title }}</a></h4>
+            <h4><a href="{{ url('vlog:article', article.category.slug, article.slug) }}">{{ article.title }}</a></h4>
         </div>
     {% endfor %}
 {% endblock %}

@@ -2,8 +2,7 @@ from core.views import BaseView
 from .models import Article, Category, Tag
 from django.db.models import Count
 
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.shortcuts import render
+from django.core.paginator import Paginator
 
 
 class IndexView(BaseView):
@@ -12,28 +11,17 @@ class IndexView(BaseView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        articles = Article.objects.all()
-
-        categories = Category.objects.get(title=articles[0].category)
-
-        most_popular_categories = Category.objects\
-                            .annotate(articles_count=Count('articles'))\
-                            .order_by('-articles_count')[:3]
-
-        most_commented_articles = Article.objects\
-                            .annotate(comment_count=Count('comments'))\
-                            .order_by('-comment_count')[:3]
-
-        most_populated_tags = Tag.objects\
-                            .annotate(num_articles=Count('articles'))\
-                            .order_by('-num_articles')[:3]
+        articles = Article.get_all()
 
         context.update({
             'articles': articles,
-            'categories': categories,
-            'most_popular_categories': most_popular_categories,
-            'most_commented_articles': most_commented_articles,
-            'most_populated_tags': most_populated_tags
+            #'categories': Category.objects.get(title=articles[0].category),
+            'most_popular_categories': Category.objects.annotate(
+                articles_count=Count('articles')).order_by('-articles_count')[:3],
+            'most_commented_articles': Article.objects.annotate(
+                comment_count=Count('comments')).order_by('-comment_count')[:3],
+            'most_populated_tags': Tag.objects.annotate(
+                num_articles=Count('articles')).order_by('-num_articles')[:3]
         })
 
         return context
@@ -73,10 +61,9 @@ class CategoriesView(IndexView):
         categories = paginator.get_page(page)
 
         context.update({
-            'categories': categories
+            'categories': categories,
+            'paginator': paginator
         })
-        # import ipdb
-        # ipdb.set_trace()
         return self.render_to_response(context)
 
 
@@ -86,7 +73,7 @@ class CategoryView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        category = Category.objects.get(slug=kwargs.get('slug'))
+        category = Category.objects.get(slug=kwargs.get('article_category_slug'))
         articles = Article.objects.filter(category=category)
 
         context.update({

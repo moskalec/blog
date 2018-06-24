@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils.translation import gettext as _
 
 from ckeditor.fields import RichTextField
-from django.urls import reverse
+from django.db.models import Count
 
 from core.models import BaseModel
 
@@ -37,8 +37,11 @@ class Category(Publication):
         on_delete=models.SET_NULL,
         null=True
     )
-    def get_absolute_url(self):
-        return reverse('detail', args=[str(self.slug)])
+
+    @classmethod
+    def get_all(cls):
+        return cls.objects.annotate(
+            articles_count=Count('articles')).order_by('-articles_count')
 
     class Meta:
         db_table = 'category'
@@ -70,6 +73,16 @@ class Article(Publication):
         null=True
     )
 
+    @classmethod
+    def get_all(cls):
+        return cls.objects.annotate(
+            comments_count=Count('comments')).order_by('-comments_count')
+
+    @classmethod
+    def get_from_category(cls, category):
+        return cls.objects.annotate(
+            comments_count=Count('comments')).order_by('-comments_count')
+
     class Meta:
         db_table = 'article'
         verbose_name = _('Article')
@@ -82,6 +95,11 @@ class Tag(Publication):
         related_name='tags',
         verbose_name=_('Articles')
     )
+
+    @classmethod
+    def get_all(cls):
+        return cls.objects.annotate(
+            articles_count=Count('articles')).order_by('-articles_count')
 
     class Meta:
         db_table = 'tag'
