@@ -10,47 +10,44 @@ urlpatterns = [
     ),
 
     re_path(
-        '^home/categories/popular/$', views.PopularCategoriesView.as_view(
-            template_name='vlog/popular_categories.tpl'), name='popular_categories'
+        '^home/categories/popular/$',
+            views.PopularCategoriesView.as_view(), name='popular_categories'
     ),
 
     re_path(
-        '^home/tags/popular/$', views.PopulatedTagsView.as_view(
-            template_name='vlog/populated_tags.tpl'), name='populated_tags'
+        '^home/tags/popular/$',
+            views.PopulatedTagsView.as_view(), name='populated_tags'
     ),
 
     re_path(
-        '^home/articles/popular/$', views.PopularArticlesView.as_view(
-            template_name='vlog/popular_articles.tpl'), name='popular_articles'
+        '^home/articles/popular/$',
+            views.PopularArticlesView.as_view(), name='popular_articles'
     ),
 
     re_path(
-        '^home/articles/', views.ArticlesView.as_view(
-            template_name='vlog/articles.tpl'), name='articles'
+        '^home/articles/', views.ArticlesView.as_view(), name='articles'
     ),
 
     re_path(
-        '^home/categories/$', views.CategoriesView.as_view(
-            template_name='vlog/categories.tpl'), name='categories'
+        '^home/categories/$', views.CategoriesView.as_view(), name='categories'
     ),
 
     re_path(
-        "^home/categories/(?P<article_category_slug>[\w-]+[']*)/articles/(?P<article_title>[\w-]+[']*)/",
-        views.ArticleView.as_view(template_name='vlog/article.tpl'), name='article'
+        "^home/categories/(?P<article_category_slug>[\w-]+[']*)"
+            "/articles/(?P<article_title>[\w-]+[']*)/",
+            views.ArticleView.as_view(), name='article'
     ),
 
     re_path(
-        "^home/categories/(?P<article_category_slug>[\w-]+[']*)/", views.CategoryView.as_view(
-            template_name='vlog/category.tpl'), name='category'
+        "^home/categories/(?P<article_category_slug>[\w-]+[']*)/",
+            views.CategoryView.as_view(), name='category'
     ),
 
     re_path(
-        '^home/tags/$', views.TagsView.as_view(
-            template_name='vlog/tags.tpl'), name='tags'
+        '^home/tags/$', views.TagsView.as_view(), name='tags'
     ),
 
     re_path(
-        "^home/tags/(?P<slug>[\w-]+[']*)/", views.TagView.as_view(
-            template_name='vlog/tag.tpl'), name='tag'
+        "^home/tags/(?P<slug>[\w-]+[']*)/", views.TagView.as_view(), name='tag'
     ),
 ]
