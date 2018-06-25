@@ -38,6 +38,12 @@ class Category(Publication):
         null=True
     )
 
+    image = models.ImageField(
+        verbose_name=_('Image'),
+        blank=True,
+        null=True
+    )
+
     @classmethod
     def get_all(cls):
         return cls.objects.annotate(
@@ -70,6 +76,12 @@ class Article(Publication):
         related_name='articles',
         verbose_name=_('Category'),
         on_delete=models.SET_NULL,
+        null=True
+    )
+
+    image = models.ImageField(
+        verbose_name=_('Image'),
+        blank=True,
         null=True
     )
 

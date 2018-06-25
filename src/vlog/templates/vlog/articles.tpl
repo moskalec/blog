@@ -1,8 +1,8 @@
 {% extends 'core/base.tpl' %}
+{% import 'core/macros.tpl' as macro %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{{ url('vlog:index') }}">{{ _('Home') }}</a></li>
-  <li class="breadcrumb-item active"><a href="{{ url('vlog:articles') }}">{{ _('Articles') }}</a></li>
+  {{ macro.breadcrumps(crumbs, 'Articles') }}
 {% endblock %}
 
 {% block content %}

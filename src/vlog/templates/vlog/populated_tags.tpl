@@ -1,15 +1,14 @@
 {% extends 'core/base.tpl' %}
+{% import 'core/macros.tpl' as macro %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{{ url('vlog:index') }}">{{ _('Home') }}</a></li>
-  <li class="breadcrumb-item"><a href="{{ url('vlog:tags') }}">{{ _('Tags') }}</a></li>
-  <li class="breadcrumb-item"><a href="{{ url('vlog:populated_tags') }}">{{ _('Popular tags') }}</a></li>
+  {{ macro.breadcrumps(crumbs, _('Populated tags')) }}
 {% endblock %}
 
 {% block content %}
-    {% for tag in popular_tags %}
+    {% for tag in populated_tags %}
         <div class="blog-post">
-            <h4><a href="/">{{ tag.title }}</a></h4>
+            <h4><a href="{{ url('vlog:tag', tag.slug) }}">{{ tag.title }}</a></h4>
         </div>
     {% endfor %}
 {% endblock %}
