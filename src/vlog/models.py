@@ -47,12 +47,13 @@ class Category(Publication):
     @classmethod
     def get_all(cls):
         return cls.objects.annotate(
-            articles_count=Count('articles')).order_by('-articles_count')
+            articles_count=Count('articles'))#.order_by('-articles_count')
 
     class Meta:
         db_table = 'category'
         verbose_name = _('Category')
         verbose_name_plural = _('Categories')
+        ordering = ['-articles']
 
 
 class Article(Publication):
@@ -88,17 +89,18 @@ class Article(Publication):
     @classmethod
     def get_all(cls):
         return cls.objects.annotate(
-            comments_count=Count('comments')).order_by('-comments_count')
+            comments_count=Count('comments'))
 
     @classmethod
     def get_from_category(cls, category):
         return cls.objects.annotate(
-            comments_count=Count('comments')).order_by('-comments_count')
+            comments_count=Count('comments'))
 
     class Meta:
         db_table = 'article'
         verbose_name = _('Article')
         verbose_name_plural = _('Articles')
+        ordering = ['comments']
 
 
 class Tag(Publication):
@@ -117,6 +119,7 @@ class Tag(Publication):
         db_table = 'tag'
         verbose_name = _('Tag')
         verbose_name_plural = _('Tags')
+        ordering = ['tag__articles']
 
 
 class Comment(BaseModel):

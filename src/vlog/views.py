@@ -18,11 +18,11 @@ class IndexView(BaseView):
         context.update({
             'articles': articles,
             'most_popular_categories': Category.objects.annotate(
-                articles_count=Count('articles')).order_by('-articles_count')[:3],
+                articles_count=Count('articles'))[:3],
             'most_commented_articles': Article.objects.annotate(
-                comment_count=Count('comments')).order_by('-comment_count')[:3],
+                comment_count=Count('comments'))[:3],
             'most_populated_tags': Tag.objects.annotate(
-                num_articles=Count('articles')).order_by('-num_articles')[:3]
+                num_articles=Count('articles'))[:3],
         })
 
         return context
@@ -163,8 +163,8 @@ class PopulatedTagsView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        populated_tags = Tag.objects.annotate(num_articles=Count('articles'))\
-                                            .order_by('-num_articles')
+        populated_tags = Tag.objects.annotate(
+            num_articles=Count('articles'))
 
         crumbs = [
             {'url': reverse('vlog:index'), 'title': _('Home')},
@@ -185,7 +185,7 @@ class PopularCategoriesView(IndexView):
         context = super().get_context_data(**kwargs)
 
         popular_categories = Category.objects.annotate(
-            articles_count=Count('articles')).order_by('-articles_count')
+            articles_count=Count('articles'))
 
         crumbs = [
             {'url': reverse('vlog:index'), 'title': _('Home')},
@@ -207,7 +207,7 @@ class PopularArticlesView(IndexView):
         context = super().get_context_data(**kwargs)
 
         popular_articles = Article.objects.annotate(
-            comment_count=Count('comments')).order_by('-comment_count')
+            comment_count=Count('comments'))
 
         crumbs = [
             {'url': reverse('vlog:index'), 'title': _('Home')},
