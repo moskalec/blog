@@ -51,7 +51,7 @@ class ArticleView(IndexView):
     def get(self, request, *args, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        article = Article.objects.get(slug=kwargs.get('article_title'))
+        article = Article.objects.get(slug=kwargs.get('article_slug'))
         category = Category.objects.get(title=article.category)
 
         crumbs = [
@@ -177,6 +177,7 @@ class PopulatedTagsView(IndexView):
         })
 
         return context
+
 
 class PopularCategoriesView(IndexView):
     template_name = 'vlog/popular_categories.tpl'

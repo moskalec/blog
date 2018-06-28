@@ -34,7 +34,7 @@ urlpatterns = [
 
     re_path(
         "^home/categories/(?P<article_category_slug>[\w-]+[']*)"
-            "/articles/(?P<article_title>[\w-]+[']*)/",
+            "/articles/(?P<article_slug>[\w-]+[']*)/",
             views.ArticleView.as_view(), name='article'
     ),
 

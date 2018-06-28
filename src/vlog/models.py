@@ -119,7 +119,7 @@ class Tag(Publication):
         db_table = 'tag'
         verbose_name = _('Tag')
         verbose_name_plural = _('Tags')
-        ordering = ['tag__articles']
+        # ordering = ['articles']
 
 
 class Comment(BaseModel):

@@ -1,14 +1,15 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, override_settings
 from vlog import models
 from vlog import forms
 from vlog import views
 from core.views import BaseView
+from django.urls import reverse
 
 
 class TransliterationTest(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create(
+        self.user = get_user_model().objects.create_user(
             username='user', password='qwerty123'
         )
 
@@ -45,7 +46,7 @@ class TransliterationTest(TestCase):
 
 class TestVlog(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create(
+        self.user = get_user_model().objects.create_user(
             username='user', password='qwerty123'
         )
         category = models.Category.objects.create(
@@ -53,23 +54,26 @@ class TestVlog(TestCase):
             slug='sport',
             author=self.user
         )
-        self.article = models.Article.objects.create(
+        article = models.Article.objects.create(
             title='футбол',
             slug='football',
             author=self.user,
             category=category
         )
-        models.Tag.objects.create(
+        tag = models.Tag.objects.create(
             title='мяч',
-            slug='ball',
-            # articles=('football', )
+            slug='ball'
         )
-        models.Comment.objects.create(
+        comment = models.Comment.objects.create(
             author=self.user,
-            # article=#####,
-            # text="ololo"
+            article=article,
+            text="ololo"
         )
-        BaseView(template_name = 'ololo.html')
+
+        article.tags.add(tag)
+        article.comments.add(comment)
+
+        BaseView(template_name='ololo.html')
         views.Category.objects.create(
             title='абра-кадабра',
             slug='abra-kadabra',
@@ -78,10 +82,9 @@ class TestVlog(TestCase):
         views.Article.objects.create(
             title='тестовая статься',
             slug='testovaya-statia',
-            author=self.user
+            author=self.user,
+            category=category
         )
-
-        self.factory = RequestFactory()
 
 
 class CategoryModelTestCase(TestVlog):
@@ -120,6 +123,9 @@ class ArticleModelTestCase(TestVlog):
         expected_name = 'футбол'
         self.assertEqual(str(article), expected_name)
 
+    def test_get_all_method(self):
+        self.assertEqual(tuple(models.Article.objects.all()), tuple(models.Article.get_all()))
+
 
 class TagModelTestCase(TestVlog):
 
@@ -137,6 +143,9 @@ class TagModelTestCase(TestVlog):
         expected_name = 'мяч'
         self.assertEqual(str(tag), expected_name)
 
+    def test_get_all_method(self):
+        self.assertEqual(tuple(models.Tag.objects.all()), tuple(models.Tag.get_all()))
+
 
 class CommentModelTestCase(TestVlog):
 
@@ -145,83 +154,159 @@ class CommentModelTestCase(TestVlog):
         self.assertIsInstance(instance, models.Comment)
 
     def test_comment_model(self):
-        comment = models.Comment.objects.get(author = self.user)
+        comment = models.Comment.objects.get(author=self.user)
         self.assertEqual(comment.author, self.user)
-        # self.assertEqual(comment.article, 'ololo')
-        # self.assertEqual(comment.text, 'ololo')
+        self.assertEqual(comment.article.title, 'футбол')
+        self.assertEqual(comment.text, 'ololo')
 
-    # def test_comment_name(self):
-        # comment = models.Comment.objects.get(author = self.user, article = )
-        # self_author_username = self.user
-        #self_article_title = #####
-        # self.assertEqual(str(comment), f'{self_author_username} [{self_article_title}]')
+    def test_comment_name(self):
+        comment = models.Comment.objects.get(author=self.user)
+        self_author_username = self.user
+        self_article_title = 'футбол'
+        self.assertEqual(str(comment), f'{self_author_username} [{self_article_title}]')
 
 
 class BaseViewTestCase(TestVlog):
 
-    def test_base_view_simple_load(self):
-        instance = BaseView()
-        self.assertIsInstance(instance, BaseView)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
 
-    def test_base_view_template(self):
-        self.assertEqual(BaseView.template_name, '')
+        response = self.client.get(reverse('vlog:index'))
 
-    def test_index(self):
-        request = self.factory.get('/')
-        request.user = self.user
-        response = views.IndexView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEquals(response.status_code, 200)
 
-    def test_home(self):
-        request = self.factory.get('/home/')
-        request.user = self.user
-        response = views.IndexView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
 
 
 class PopularCategoriesViewTestCase(TestVlog):
 
-    def test_popular_categories(self):
-        request = self.factory.get('/home/categories/popular/')
-        request.user = self.user
-        response = views.PopularCategoriesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        response = self.client.get(reverse('vlog:popular_categories'))
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('popular_categories' in context)
 
 
 class PopulatedTagsViewTestCase(TestVlog):
 
-    def test_populated_tags(self):
-        request = self.factory.get('/home/tags/popular/')
-        request.user = self.user
-        response = views.PopulatedTagsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        response = self.client.get(reverse('vlog:popular_categories'))
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('popular_categories' in context)
 
 
 class PopularArticlesViewTestCase(TestVlog):
 
-    def test_popular_articles(self):
-        request = self.factory.get('/home/articles/popular/')
-        request.user = self.user
-        response = views.PopularArticlesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        response = self.client.get(reverse('vlog:popular_articles'))
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('popular_articles' in context)
 
 
 class ArticlesViewTestCase(TestVlog):
 
-    def test_articles(self):
-        request = self.factory.get('/home/articles/')
-        request.user = self.user
-        response = views.ArticlesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        response = self.client.get(reverse('vlog:articles'))
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('articles' in context)
 
 
 class CategoriesViewTestCase(TestVlog):
 
-    def test_articles(self):
-        request = self.factory.get('/home/categories/')
-        request.user = self.user
-        response = views.CategoriesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        response = self.client.get(reverse('vlog:categories'))
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('categories' in context)
+        self.assertTrue('paginator' in context)
 
 
 class ArticleViewTestCase(TestVlog):
@@ -237,13 +322,30 @@ class ArticleViewTestCase(TestVlog):
         self.assertEqual(article.slug, 'testovaya-statia')
         self.assertEqual(article.author, self.user)
 
-    # def test_articles(self):
-    #     request = self.factory.get(
-    #         '/home/categories/football/articles/testovaya-statia)/'
-    #     )
-    #     request.user = self.user
-    #     response = views.ArticleView.as_view()(request, 'football', 'testovaya-statia')
-    #     self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        article = models.Article.objects.get(title='футбол')
+        response = self.client.get(
+            reverse('vlog:article', args=[article.category.slug, article.slug])
+        )
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('article' in context)
+        self.assertTrue('category' in context)
 
 
 class CategoryViewTestCase(TestVlog):
@@ -259,29 +361,76 @@ class CategoryViewTestCase(TestVlog):
         self.assertEqual(category.slug, 'abra-kadabra')
         self.assertEqual(category.author, self.user)
 
-    # def test_category(self):
-    #     category = views.Category.objects.get(slug='sport')
-    #     request = self.factory.get(
-    #         '/home/categories/sport/'
-    #     )
-    #     request.user = self.user
-    #     response = views.CategoryView.as_view()(request, category.slug)
-    #     self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        article = views.Article.objects.get(title='футбол')
+
+        response = self.client.get(reverse('vlog:category', args=[article.category.slug]))
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('category' in context)
+        self.assertTrue('articles' in context)
 
 
 class TagsViewTestCase(TestVlog):
 
-    def test_articles(self):
-        request = self.factory.get('/home/tags/')
-        request.user = self.user
-        response = views.TagsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        response = self.client.get(reverse('vlog:tags'))
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('tags' in context)
 
 
-# class TagViewTestCase(TestVlog):
+class TagViewTestCase(TestVlog):
 
-#     def test_articles(self):
-#         request = self.factory.get('/home/tags/ball/')
-#         request.user = self.user
-#         response = views.TagView.as_view()(request)
-#         self.assertEqual(response.status_code, 200)
+    @override_settings(DEBUG=True)
+    def test_view_url_by_name(self):
+        response = self.client.login(
+            username='user',
+            password='qwerty123'
+        )
+        self.assertTrue(response)
+
+        tag = models.Tag.objects.get(title='мяч')
+        response = self.client.get(reverse('vlog:tag', args=[tag.slug]))
+
+        self.assertEquals(response.status_code, 200)
+
+        context = response.context
+
+        self.assertTrue('articles' in context)
+        self.assertTrue('most_popular_categories' in context)
+        self.assertTrue('most_commented_articles' in context)
+        self.assertTrue('most_populated_tags' in context)
+        self.assertTrue('crumbs' in context)
+        self.assertTrue('articles' in context)
+        self.assertTrue('tag' in context)
