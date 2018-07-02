@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'django_bootstrap_breadcrumbs',
 
     'core',
-    'vlog'
+    'vlog',
+    'rest_framework',
+    'snippets.apps.SnippetsConfig',
 ]
 
 

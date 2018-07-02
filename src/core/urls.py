@@ -17,12 +17,16 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from django.contrib.auth.views import LoginView, LogoutView
 
+from django.conf.urls import url
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
     re_path(r'^login/$', LoginView.as_view(template_name='core/login.tpl'), name='login'),
     re_path(r'^logout/$', LogoutView.as_view(), name='logout'),
     re_path(r'', include(('vlog.urls', 'vlog'), namespace='vlog')),
+
+    url(r'^', include('snippets.urls')),
 ]
 
 #: TODO: While development. Code below is pretty fucking far from ok.
