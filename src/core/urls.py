@@ -25,8 +25,7 @@ urlpatterns = [
     re_path(r'^login/$', LoginView.as_view(template_name='core/login.tpl'), name='login'),
     re_path(r'^logout/$', LogoutView.as_view(), name='logout'),
     re_path(r'', include(('vlog.urls', 'vlog'), namespace='vlog')),
-
-    url(r'^', include('snippets.urls')),
+    url(r'api/v1/', include('api.urls')),
 ]
 
 #: TODO: While development. Code below is pretty fucking far from ok.

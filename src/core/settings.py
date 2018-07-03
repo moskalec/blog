@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'core',
     'vlog',
     'rest_framework',
-    'snippets.apps.SnippetsConfig',
+    'api.apps.APIConfig',
 ]
 
 
@@ -184,3 +184,8 @@ try:
     from .settings_local import *
 except ImportError:
     pass
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
