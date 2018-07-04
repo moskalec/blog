@@ -9,5 +9,5 @@ router.register(r'articles', views.ArticleViewSet)
 router.register(r'tags', views.TagViewSet)
 
 urlpatterns = [
-    url(r'^', include(router.urls))
+    url(r'^', include(router.urls)),
 ]
