@@ -7,7 +7,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('id', 'title', 'slug', 'created', 'updated', 'image', 'author_id', 'url', 'owner')
+        fields = ('id', 'title', 'slug', 'created', 'updated', 'image', 'author_id', 'owner')
         lookup_field = 'slug'
         extra_kwargs = {
             'url': {'lookup_field': 'slug'}

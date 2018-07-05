@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'core',
     'vlog',
     'rest_framework',
-    'api.apps.APIConfig',
+    # 'api.apps.APIConfig',
+    'api'
 ]
 
 

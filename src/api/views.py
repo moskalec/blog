@@ -8,7 +8,7 @@ from vlog.models import Category, Article, Tag
 from api.serializers import CategorySerializer, ArticleSerializer, TagSerializer
 
 
-class CategoriesViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
