@@ -1,41 +1,93 @@
+import ujson
 from django.shortcuts import reverse
 
 from rest_framework.test import APITestCase
-from api.views import Category
-from vlog.models import Category
+from vlog.models import Category, Article, Tag
 
 
 class TestNoteApi(APITestCase):
     def setUp(self):
-        # create category
-        self.category = Category.objects.create(title="test")
+        self.category = Category.objects.create(title="test", slug="test")
         self.category.save()
+        self.article = Article.objects.create(title="test", slug='test')
+        self.article.save()
+        self.tag = Tag.objects.create(title="test", slug="test")
+        self.tag.save()
 
     def test_category_creation(self):
-        import ipdb
-        ipdb.set_trace()
-
         response = self.client.get(reverse('category-list'))
 
-        # assert new category was added
-        self.assertEqual(Category.objects.count(), 2)
+        self.assertEqual(Category.objects.count(), 1)
+        self.assertEqual(200, response.status_code)
 
-        # assert a created status code was returned
-        self.assertEqual(201, response.status_code)
+    def test_article_creation(self):
+        response = self.client.get(reverse('article-list'))
 
-    # def test_getting_categories(self):
-    #     response = self.client.get(reverse('category-list'), format="json")
-    #     self.assertEqual(len(response.data), 1)
-    #
-    # def test_updating_category(self):
-    #     response = self.client.put(reverse('category-detail', kwargs={'slug': 'test'}), {  # kwargs={'pk': 1}
-    #         'title': 'testing',
-    #     }, format="json")
-    #
-    #     # check info returned has the update
-    #     self.assertEqual('testing', response.data['title'])
-    #
-    # def test_deleting_category(self):
-    #     response = self.client.delete(reverse('category-detail', kwargs={'slug': 'testing'}))  # kwargs={'pk': 1}
-    #
-    #     self.assertEqual(204, response.status_code)
+        self.assertEqual(Article.objects.count(), 1)
+        self.assertEqual(200, response.status_code)
+
+    def test_tag_creation(self):
+        response = self.client.get(reverse('tag-list'))
+
+        self.assertEqual(Tag.objects.count(), 1)
+        self.assertEqual(200, response.status_code)
+
+    def test_getting_categories(self):
+        response = self.client.get(reverse('category-list'), format="json")
+        data = ujson.loads(response.content)
+
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['results'][0]['title'], 'test')
+        self.assertTrue('created' in data['results'][0])
+        self.assertTrue('updated' in data['results'][0])
+
+    def test_getting_category_detail(self):
+        response = self.client.get(reverse('category-detail', kwargs={'slug': 'test'}), format="json")
+        data = ujson.loads(response.content)
+
+        self.assertEqual(response.data['slug'], 'test')
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['title'], 'test')
+        self.assertEqual(data['slug'], 'test')
+        self.assertTrue('created' in data)
+        self.assertTrue('updated' in data)
+
+    def test_getting_articles(self):
+        response = self.client.get(reverse('article-list'), format="json")
+        data = ujson.loads(response.content)
+
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['results'][0]['title'], 'test')
+        self.assertTrue('created' in data['results'][0])
+        self.assertTrue('updated' in data['results'][0])
+
+    def test_getting_article_detail(self):
+        response = self.client.get(reverse('article-detail', kwargs={'slug': 'test'}), format="json")
+        data = ujson.loads(response.content)
+
+        self.assertEqual(response.data['slug'], 'test')
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['title'], 'test')
+        self.assertEqual(data['slug'], 'test')
+        self.assertTrue('created' in data)
+        self.assertTrue('updated' in data)
+
+    def test_getting_tags(self):
+        response = self.client.get(reverse('tag-list'), format="json")
+        data = ujson.loads(response.content)
+
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['results'][0]['title'], 'test')
+        self.assertTrue('created' in data['results'][0])
+        self.assertTrue('updated' in data['results'][0])
+
+    def test_getting_tag_detail(self):
+        response = self.client.get(reverse('tag-detail', kwargs={'pk': 1}), format="json")
+        data = ujson.loads(response.content)
+
+        self.assertEqual(response.data['slug'], 'test')
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['title'], 'test')
+        self.assertEqual(data['slug'], 'test')
+        self.assertTrue('created' in data)
+        self.assertTrue('updated' in data)

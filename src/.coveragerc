@@ -1,0 +1,28 @@
+[run]
+omit =
+    */.meta/*
+    core/__init__.py
+    core/settings.py
+    vlog/migrations/*
+    vlog/__init__.py
+    vlog/tests/*
+       
+    api/__init__.py
+    api/admin.py
+    api/apps.py
+    api/migrations/__init__.py
+    api/models.py
+    api/permissions.py
+    api/serializers.py
+    api/tests.py
+    api/urls.py
+    core/models.py
+    core/urls.py
+    core/views.py
+    core/wsgi.py
+    manage.py
+    vlog/admin.py
+    vlog/apps.py
+    vlog/forms.py
+    vlog/tests.py
+    vlog/urls.py
