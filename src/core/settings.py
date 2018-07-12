@@ -181,6 +181,10 @@ MEDIA_URL = '/media/'
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
+FIXTURE_DIRS = (
+   '/api/fixtures/',
+)
+
 try:
     from .settings_local import *
 except ImportError:
