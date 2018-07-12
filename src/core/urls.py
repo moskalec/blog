@@ -1,3 +1,26 @@
+from django.contrib import admin
+from django.urls import path, re_path, include
+from django.contrib.auth.views import LoginView, LogoutView
+
+from django.conf.urls import url
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    re_path(r'^login/$', LoginView.as_view(template_name='core/login.tpl'), name='login'),
+    re_path(r'^logout/$', LogoutView.as_view(), name='logout'),
+    re_path(r'', include(('vlog.urls', 'vlog'), namespace='vlog')),
+    url(r'api/v1/', include('api.urls')),
+]
+
+#: TODO: While development. Code below is pretty fucking far from ok.
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 """vlog URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -13,23 +36,3 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, re_path, include
-from django.contrib.auth.views import LoginView, LogoutView
-
-from django.conf.urls import url
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
-    re_path(r'^login/$', LoginView.as_view(template_name='core/login.tpl'), name='login'),
-    re_path(r'^logout/$', LogoutView.as_view(), name='logout'),
-    re_path(r'', include(('vlog.urls', 'vlog'), namespace='vlog')),
-    url(r'api/v1/', include('api.urls')),
-]
-
-#: TODO: While development. Code below is pretty fucking far from ok.
-from django.conf import settings
-from django.conf.urls.static import static
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

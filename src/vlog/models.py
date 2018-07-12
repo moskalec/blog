@@ -47,7 +47,7 @@ class Category(Publication):
     @classmethod
     def get_all(cls):
         return cls.objects.annotate(
-            articles_count=Count('articles'))#.order_by('-articles_count')
+            articles_count=Count('articles'))
 
     class Meta:
         db_table = 'category'

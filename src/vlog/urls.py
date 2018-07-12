@@ -11,17 +11,17 @@ urlpatterns = [
 
     re_path(
         '^home/categories/popular/$',
-            views.PopularCategoriesView.as_view(), name='popular_categories'
+        views.PopularCategoriesView.as_view(), name='popular_categories'
     ),
 
     re_path(
         '^home/tags/popular/$',
-            views.PopulatedTagsView.as_view(), name='populated_tags'
+        views.PopulatedTagsView.as_view(), name='populated_tags'
     ),
 
     re_path(
         '^home/articles/popular/$',
-            views.PopularArticlesView.as_view(), name='popular_articles'
+        views.PopularArticlesView.as_view(), name='popular_articles'
     ),
 
     re_path(
@@ -34,13 +34,13 @@ urlpatterns = [
 
     re_path(
         "^home/categories/(?P<article_category_slug>[\w-]+[']*)"
-            "/articles/(?P<article_slug>[\w-]+[']*)/",
-            views.ArticleView.as_view(), name='article'
+        "/articles/(?P<article_slug>[\w-]+[']*)/",
+        views.ArticleView.as_view(), name='article'
     ),
 
     re_path(
         "^home/categories/(?P<article_category_slug>[\w-]+[']*)/",
-            views.CategoryView.as_view(), name='category'
+        views.CategoryView.as_view(), name='category'
     ),
 
     re_path(
